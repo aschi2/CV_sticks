@@ -4,6 +4,12 @@
 
 class stree:
     def __init__(self,game_state):
+        if 'prev_moves' not in globals():
+            globals()['prev_moves'] = set()
+        else:
+            global prev_moves
+            prev_moves.add(f'{game_state}')
+        self.game_state = game_state
         self.p_turn,self.L1,self.R1,self.L2,self.R2 = game_state
         self.playing = True
         self.split = None
@@ -28,32 +34,44 @@ class stree:
         
         if self.playing == True:
             if self.p_turn == 1:
-                self.LL = stree((2, self.L1, self.R1, self.L2 + self.L1, self.R2))
-                self.LR = stree((2,self.L1, self.R1, self.L2, self.R2 + self.L1))
-                self.RL = stree((2,self.L1, self.R1, self.L2 + self.R1, self.R2))
-                self.RR = stree((2,self.L1, self.R1, self.L2, self.R2 + self.R1))
+                if self.L1 != 0 and self.L2 !=0:
+                    self.LL = stree((2, self.L1, self.R1, self.L2 + self.L1, self.R2))
+                if self.L1 !=0 and self.R2!=0:
+                    self.LR = stree((2,self.L1, self.R1, self.L2, self.R2 + self.L1))
+                if self.R1 !=0 and self.L2!=0:
+                    self.RL = stree((2,self.L1, self.R1, self.L2 + self.R1, self.R2))
+                if self.R1 !=0 and self.R2!=0:
+                    self.RR = stree((2,self.L1, self.R1, self.L2, self.R2 + self.R1))
             if self.p_turn == 2:
-                self.LL = stree((1, self.L1 + self.L2, self.R1, self.L2, self.R2))
-                self.LR = stree((1, self.L1, self.R1 + self.L2, self.L2, self.R2))
-                self.RL = stree((1, self.L1 + self.R2, self.R1, self.L2, self.R2))
-                self.RR = stree((1, self.L1, self.R1 + self.R2, self.L2, self.R2))
+                if self.L1 !=0 and self.L2!=0:
+                    self.LL = stree((1, self.L1 + self.L2, self.R1, self.L2, self.R2))
+                if self.L2 !=0 and self.R1!=0:
+                    self.LR = stree((1, self.L1, self.R1 + self.L2, self.L2, self.R2))
+                if self.R2 !=0 and self.L1!=0:
+                    self.RL = stree((1, self.L1 + self.R2, self.R1, self.L2, self.R2))
+                if self.R2 !=0 and self.R1!=0:
+                    self.RR = stree((1, self.L1, self.R1 + self.R2, self.L2, self.R2))
             
             if self.p_turn == 1:
                 self.bsplit,self.wsplit = self.check_split(self.L1,self.R1)
                 if self.bsplit:
                     if self.wsplit == 'L':
-                        self.split = stree((2, self.L1/2, self.L1/2, self.L2, self.R2))
+                        if f'{(2, int(self.L1/2), int(self.L1/2), self.L2, self.R2)}' not in prev_moves:
+                            self.split = stree((2, int(self.L1/2), int(self.L1/2), self.L2, self.R2))
                     else:
-                        self.split = stree((2,  self.R1/2, self.R1/2, self.L2, self.R2))
+                        if f'{(2,  int(self.R1/2), int(self.R1/2), self.L2, self.R2)}' not in prev_moves:
+                            self.split = stree((2,  int(self.R1/2), int(self.R1/2), self.L2, self.R2))
 
 
             if self.p_turn == 2:
                 self.bsplit,self.wsplit = self.check_split(self.L2,self.R2)
                 if self.bsplit:
                     if self.wsplit == 'L':
-                        self.split = stree((2, self.L1, self.R1, self.L2/2, self.L2/2))
+                        if f'{(2, self.L1, self.R1, int(self.L2/2), int(self.L2/2))}' not in prev_moves:
+                            self.split = stree((2, self.L1, self.R1, int(self.L2/2), int(self.L2/2)))
                     else:
-                        self.split = stree((2,  self.L1, self.R1, self.R2/2, self.R2/2))
+                        if f'{(2,  self.L1, self.R1, int(self.R2/2), int(self.R2/2))}' not in prev_moves:
+                            self.split = stree((2,  self.L1, self.R1, int(self.R2/2), int(self.R2/2)))
 
 
         
