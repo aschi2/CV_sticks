@@ -1,9 +1,8 @@
 
 
-
-
 class stree:
     def __init__(self,game_state):
+        self.valid_moves = []
         if 'prev_moves' not in globals():
             globals()['prev_moves'] = set()
         else:
@@ -42,7 +41,7 @@ class stree:
                     self.RL = stree((2,self.L1, self.R1, self.L2 + self.R1, self.R2))
                 if self.R1 !=0 and self.R2!=0:
                     self.RR = stree((2,self.L1, self.R1, self.L2, self.R2 + self.R1))
-            if self.p_turn == 2:
+            else:
                 if self.L1 !=0 and self.L2!=0:
                     self.LL = stree((1, self.L1 + self.L2, self.R1, self.L2, self.R2))
                 if self.L2 !=0 and self.R1!=0:
@@ -72,11 +71,16 @@ class stree:
                     else:
                         if f'{(2,  self.L1, self.R1, int(self.R2/2), int(self.R2/2))}' not in prev_moves:
                             self.split = stree((2,  self.L1, self.R1, int(self.R2/2), int(self.R2/2)))
-
-
-        
-
-    
+        if self.LL!=None:
+            self.valid_moves.append(self.LL)
+        if self.LR!=None:
+            self.valid_moves.append(self.LR)
+        if self.RL!=None:
+            self.valid_moves.append(self.RL)
+        if self.RR!=None:
+            self.valid_moves.append(self.RR)
+        if self.split!=None:
+            self.valid_moves.append(self.split)
 
     def check_bust(self,hand):
         if hand >=5:
@@ -93,3 +97,10 @@ class stree:
             return((True,'L'))
         else:
             return((False,None))
+
+    def __len__(self):
+        return(1)
+
+    def __str__(self):
+        return(f"{self.game_state}")
+
